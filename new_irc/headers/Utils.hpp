@@ -17,13 +17,16 @@
 #include <poll.h>
 #include <string.h>
 #include <unistd.h>
+#include <algorithm>
+#include <sstream>
 
 #define BUFFER_SIZE 4096
-#define USER_SIZE 100
+#define USER_MAX 100
 
 void	*errCheck(void *cnd, void *res, std::string msg);
 int	    errCheck(int cnd, int res, std::string msg);
 void	exitErr(std::string msg);
 void    serverInfo(const std::string &message);
+std::vector<std::string> tokenize(std::string &msg);
 
 #endif
