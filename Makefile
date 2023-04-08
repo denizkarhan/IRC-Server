@@ -1,4 +1,4 @@
-CC = c++
+CC = g++
 
 FLAGS = -Wall -Wextra -Werror -std=c++98
 
@@ -12,7 +12,7 @@ all: $(NAME)
 
 $(NAME): $(OBJ)
 	$(CC) $(FLAGS) $(OBJ) -o $(NAME)
-
+	@rm -rf $(OBJ)
 clean:
 	@rm -rf $(OBJ)
 
