@@ -2,7 +2,7 @@ CC = g++
 
 FLAGS = -Wall -Wextra -Werror -std=c++98
 
-SRC = $(shell find ./src -name "*.cpp")
+SRC = $(wildcard ./src/*.cpp ./src/commands/*.cpp)
 
 OBJ = $(SRC:.cpp=.o)
 
