@@ -55,9 +55,8 @@ int	errCheck(int cnd, int res, std::string msg) {
 std::vector<std::string> tokenize(std::string &msg) {
     std::vector<std::string> tokens;
     std::string token;
-	int	i = 0;
 
-    for (int i = 0 ; i < msg.size() ; i++){
+    for (size_t i = 0 ; i < msg.size() ; i++){
 		if (msg[i] > 32)
 			token += msg[i];
 		else{

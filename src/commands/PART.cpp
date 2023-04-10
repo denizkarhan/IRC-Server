@@ -17,7 +17,7 @@ void	Server::part(int fd, std::vector<std::string> token) {
 		return;
 	}
 
-    int i;
+    size_t i;
 	for (i = 0 ; i < _clients[fd]->_channels.size() ; i++)
 		if (_clients[fd]->_channels[i]->getName() == name)
             break;

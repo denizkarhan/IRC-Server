@@ -9,6 +9,10 @@ Channel::Channel(Client *admin, std::string const &name, std::string const &pass
     _channelPassword = password;
     _clientAuthority = true;
     _maxClientCount = 100;
+
+    _k = password;
+    _l = 0;
+    _n = false;
 }
 
 Channel::~Channel()
@@ -18,7 +22,7 @@ Channel::~Channel()
 
 void    Channel::leftTheChannel(Client *client)
 {
-    for (int i = 0 ; i < _channelClients.size() ; i++)
+    for (size_t i = 0 ; i < _channelClients.size() ; i++)
     {
         if (_channelClients[i] == client)
         {
@@ -49,7 +53,7 @@ void    Channel::leftTheChannel(Client *client)
 std::string     Channel::getUsers()
 {
     std::string users;
-    for (int i = 0 ; i < _channelClients.size() ; i++)
+    for (size_t i = 0 ; i < _channelClients.size() ; i++)
 	    users.append(_channelClients[i]->getNickName() + " ");
     return users;
 }

@@ -13,7 +13,7 @@ void Client::leave()
 	if (!_channels.size())
 		return ;
 
-    for (int i = 0 ; i < _channels.size() ; i+= 1)
+    for (size_t i = 0 ; i < _channels.size() ; i+= 1)
     {
     	const std::string name = _channels[i]->getName();
 

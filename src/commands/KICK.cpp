@@ -15,11 +15,11 @@ void	Server::kick(int fd, std::vector<std::string> token)
 
 	if (token.size() > 4 && (token[4][0] != ':' || token[4].size() > 1)) {
 		reason = "";
-		for (int it = 4; it < token.size() ; it++)
+		for (size_t it = 4; it < token.size() ; it++)
 			reason.append(token[it] + " ");
 	}
 
-	int	channelFinder = 0;
+	size_t	channelFinder = 0;
 	for (channelFinder = 0 ; channelFinder < _clients[fd]->_channels.size() ; channelFinder++)
 		if (_clients[fd]->_channels[channelFinder]->getName() == name)
 			break;
@@ -37,7 +37,7 @@ void	Server::kick(int fd, std::vector<std::string> token)
 	}
 
 	int	targetClientFd = -1;
-	for (int i = 0 ; i < _clients[fd]->_channels[channelFinder]->_channelClients.size() ; i++)
+	for (size_t i = 0 ; i < _clients[fd]->_channels[channelFinder]->_channelClients.size() ; i++)
 		if (_clients[fd]->_channels[channelFinder]->_channelClients[i]->getNickName() == target)
 			targetClientFd = _clients[fd]->_channels[channelFinder]->_channelClients[i]->getFd();
 
@@ -48,7 +48,7 @@ void	Server::kick(int fd, std::vector<std::string> token)
 	}
 
 	int	removeChannelIndex = -1;
-	for (int i = 0 ; i < _clients[targetClientFd]->_channels.size() ; i++)
+	for (size_t i = 0 ; i < _clients[targetClientFd]->_channels.size() ; i++)
 		if (_clients[targetClientFd]->_channels[i]->getName() == name)
 			removeChannelIndex = i;
 
@@ -59,7 +59,7 @@ void	Server::kick(int fd, std::vector<std::string> token)
 	}
 
 	std::cout << std::endl << "Kanalın eski admini:	" << _channels[name]->getAdmin()->getNickName() << std::endl;
-	for (int i = 0 ; i < _channels[name]->_channelClients.size() ; i++)
+	for (size_t i = 0 ; i < _channels[name]->_channelClients.size() ; i++)
 		std::cout << i + 1 << "->	"<< _channels[name]->_channelClients[i]->getNickName() << std::endl;
 	
 	_channels[name]->leftTheChannel(_clients[targetClientFd]);
@@ -72,7 +72,7 @@ void	Server::kick(int fd, std::vector<std::string> token)
 	if (_channels.find(name) != _channels.end() && _channels[name]->getClientCount() > 0)
 	{
 		std::cout << std::endl << "Kanalın yeni admini:	" << _channels[name]->getAdmin()->getNickName() << std::endl;
-		for (int i = 0 ; i < _channels[name]->_channelClients.size() ; i++)
+		for (size_t i = 0 ; i < _channels[name]->_channelClients.size() ; i++)
 			std::cout << i + 1 << "->	" << _channels[name]->_channelClients[i]->getNickName() << std::endl;
 	}
 	
