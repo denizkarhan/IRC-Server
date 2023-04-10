@@ -43,7 +43,27 @@ class Client
         int getPort() const { return _port; }
 
 		void leave();
+        std::string getPrefixName()
+        {
+            std::string prefixName = _nickname;
 
+            if (!(_username.empty()))
+                prefixName += '!' + _username;
+            if (!(_hostname.empty()))
+                prefixName += '@' + _hostname;
+            return (prefixName);
+        }
+
+        void clientMsgSender(int _fd, std::string const &msg)
+        {
+            ft_write(_fd , ":" + getPrefixName() + " " + msg);
+        }
+
+        void casting(int _fd, std::vector<Client *> _clients, const std::string &message)
+        {
+            for (std::vector<Client *>::iterator it = _clients.begin(); it != _clients.end(); it++)
+                ft_write(_fd, message);
+        }
 };
 
 #endif

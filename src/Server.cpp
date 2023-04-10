@@ -44,16 +44,16 @@ void	Server::loop() {
 	while (1) {		
 		errCheck(-1, poll(_pollfds.begin().base(), _pollfds.size(), -1), "Poll Failed");
 		
-		for (pollfd pfd : _pollfds)
+		for (int i = 0 ; i < _pollfds.size() ; i++)
 		{
-			if (pfd.revents & POLLIN)
+			if (_pollfds[i].revents & POLLIN)
 			{
-				if (pfd.fd == _socketFd)
+				if (_pollfds[i].fd == _socketFd)
 				{
 					newConnection();
 					break ;
 				}
-				readMessage(pfd.fd);
+				readMessage(_pollfds[i].fd);
 			}
 		}
 	}
@@ -110,8 +110,8 @@ void Server::readMessage(int fd) {
 			arguments.push_back(buf);
 		arguments.insert(arguments.begin(), commandName); // Argümanları aldığım komutların senin fonksiyon map'ine uyarlamak için argümanların başına yukarıdan aldığım commandName'i ekledim
 
-		for (std::string args : arguments)
-			std::cout << args << std::endl;
+		// for (int i = 0 ; i < arguments.size() ; i++)
+		// 	std::cout << arguments[i] << std::endl;
 
 		if (_commands.find(arguments[0]) != _commands.end())
 			(this->*_commands[arguments[0]])(fd, arguments); // İstenen adda bir fonksiyonumuz varsa fonksiyona gidiyorum yoksa command not found.

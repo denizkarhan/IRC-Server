@@ -37,6 +37,7 @@ class Channel
         void                    setClientAuthority(bool auth) { _clientAuthority = auth; }
 
         void                    leftTheChannel(Client *client);
+        std::string             getUsers();
 };
 
 #endif
