@@ -5,9 +5,15 @@ void	Server::who(int fd, std::vector<std::string> token)
     if (token.empty() || token.size() < 2)
         return;
 
-    std::string msg = "Kanaldakiler\n";
     for (size_t i = 0 ; i < _channels[token[1]]->_channelClients.size() ; i++)
-        msg += _channels[token[1]]->_channelClients[i]->getNickName() + "\n";
-    msg += "\r\n";
-    send(fd, msg.c_str(), msg.size(), 0);
+    {    
+        std::string msg = ":" + _clients[fd]->getPrefixName() + " 352 " + _clients[fd]->getNickName() + " " + token[1];
+        msg += " " + _channels[token[1]]->_channelClients[i]->getUserName();
+        msg += " " + _channels[token[1]]->_channelClients[i]->getUserName();
+        msg += " " + _channels[token[1]]->_channelClients[i]->getPrefixName();
+        msg += " " + _channels[token[1]]->_channelClients[i]->getNickName();
+        msg += " H";
+        msg += ":0 " + _channels[token[1]]->_channelClients[i]->getRealName();
+        ft_write(fd, msg);
+    }
 }

@@ -15,10 +15,7 @@ Channel::Channel(Client *admin, std::string const &name, std::string const &pass
     _n = false;
 }
 
-Channel::~Channel()
-{
-
-}
+Channel::~Channel() {}
 
 void    Channel::leftTheChannel(Client *client)
 {
@@ -28,7 +25,7 @@ void    Channel::leftTheChannel(Client *client)
         {
             if (_channelAdmin == client)
             {
-                std::string msg = "Kanal admini " + _channelAdmin->getNickName() + " kanaldan ayrıldı, ";
+                std::string msg = "Channel's admin " + _channelAdmin->getNickName() + " quit the channel, ";
                 if (_ClientCount > 1)
                 {
                     msg = msg + "yeni admin " + _channelClients[1]->getNickName() + "\r\n";
@@ -54,6 +51,10 @@ std::string     Channel::getUsers()
 {
     std::string users;
     for (size_t i = 0 ; i < _channelClients.size() ; i++)
-	    users.append(_channelClients[i]->getNickName() + " ");
+	{
+        users += _channelClients[i]->getNickName();
+        if (i + 1 < _channelClients.size())
+            users += ",";
+    }
     return users;
 }

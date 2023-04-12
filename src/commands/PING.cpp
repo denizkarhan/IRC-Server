@@ -6,7 +6,8 @@ void	Server::ping(int fd, std::vector<std::string> token)
 		_clients[fd]->clientMsgSender(fd, ERR_NEEDMOREPARAMS(_clients[fd]->getNickName(), "PING"));
 		return ;
 	}
-
-	ft_write(fd, RPL_PING(_clients[fd]->getPrefixName(), token[1]));
+	std::string msg = "PONG :" + token[1];
+	std::cout << token[1] << std::endl;
+	ft_write(fd, msg);
 }
 

@@ -46,28 +46,20 @@ void	exitErr(std::string msg) {
 	exit(1);
 }
 
+std::string toUpper(std::string str) {
+    for (size_t i = 0; i < str.length(); ++i) {
+        str[i] = toupper(str[i]);
+    }
+    return str;
+}
+
 int	errCheck(int cnd, int res, std::string msg) {
 	if (cnd == res)
 		exitErr(msg);
 	return res;
 }
 
-std::vector<std::string> tokenize(std::string &msg) {
-    std::vector<std::string> tokens;
-    std::string token;
-
-    for (size_t i = 0 ; i < msg.size() ; i++){
-		if (msg[i] > 32)
-			token += msg[i];
-		else{
-			tokens.push_back(token);
-			token = "";}
-	}
-    return tokens;
-}
-
 void ft_write(int _fd, const std::string &message) {
-    std::string buffer = message + "\r\n";
-    if (send(_fd, buffer.c_str(), buffer.length(), 0) < 0)
-        throw std::runtime_error("Error while sending message to client.");
+    std::string msg = message + "\r\n";
+	errCheck(-1, send(_fd, msg.c_str(), msg.length(), 0), "Error: failed send message!");
 }

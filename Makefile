@@ -7,7 +7,7 @@ SRC = $(wildcard ./src/*.cpp ./src/commands/*.cpp)
 OBJ_DIR = ./build
 OBJ = $(addprefix $(OBJ_DIR)/,$(notdir $(SRC:.cpp=.o)))
 
-NAME = ft_irc
+NAME = ircserv
 
 all: $(NAME)
 

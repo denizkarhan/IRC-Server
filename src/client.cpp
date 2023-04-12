@@ -2,6 +2,7 @@
 
 Client::Client(int fd, int port) 
 {
+	_status = 0;
     _fd = fd;
     _port = port;
 }

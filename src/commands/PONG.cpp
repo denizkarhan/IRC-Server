@@ -9,4 +9,3 @@ void	Server::pong(int fd, std::vector<std::string> token)
 
 	ft_write(fd, RPL_PING(_clients[fd]->getPrefixName(), token[1]));
 }
-
