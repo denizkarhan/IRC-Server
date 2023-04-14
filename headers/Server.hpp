@@ -36,12 +36,12 @@ class Server {
         void                loop();
         void                readMessage(int fd);
         void                newConnection();
-        void                serverInfo(std::string message);
         int                 findUserByName(std::string name);
+        void                casting(int _fd, std::vector<Client *> _clients, const std::string &message);
         void                broadcast(const std::vector<Client *> &clientList, std::string msg, int excludeFd);
         void                broadcastPart(const std::vector<Client *> &clientList, std::string msg, int excludeFd, std::string channelName);
         void                broadcastNotice(const std::vector<Client *> &clientList, std::string msg, int excludeFd, std::string channelName);
-        
+
         void                cap(int fd, std::vector<std::string> token);
         void                who(int fd, std::vector<std::string> token);
 
@@ -57,12 +57,5 @@ class Server {
         void                mode(int fd, std::vector<std::string> token);
         void                notice(int fd, std::vector<std::string> token);
         void                privmsg(int fd, std::vector<std::string> token);
-
-        void casting(int _fd, std::vector<Client *> _clients, const std::string &message)
-        {
-            for (std::vector<Client *>::iterator it = _clients.begin(); it != _clients.end(); it++)
-                ft_write(_fd, message);
-        }
-
 
 };

@@ -20,16 +20,23 @@ Server::Server(char **av) : _usrCount(0) {
 	_commands["KICK"] = &Server::kick;
 	_commands["PART"] = &Server::part;
 	_commands["PING"] = &Server::ping;
-	_commands["PONG"] = &Server::pong;
 	_commands["PRIVMSG"] = &Server::privmsg;
 	_commands["NOTICE"] = &Server::notice;
-	_commands["MODE"] = &Server::notice;
+	_commands["MODE"] = &Server::mode;
 	_commands["WHO"] = &Server::who;
 }
 
 Server::~Server() {
-	_channels.erase(_channels.begin(), _channels.end());
-	_clients.erase(_clients.begin(), _clients.end());
+
+	for (std::map<int, Client *>::iterator it = _clients.begin() ; it != _clients.end(); ++it) {
+	    delete it->second;
+	}
+	_clients.clear();
+
+    for (std::map<std::string, Channel *>::iterator it = _channels.begin(); it != _channels.end(); ++it) {
+        delete it->second;
+    }
+    _channels.clear();
 }
 
 int Server::createSocket() {
@@ -47,9 +54,9 @@ int Server::createSocket() {
 }
 
 void	Server::loop() {
-	while (1) {		
+	while (1)
+	{
 		errCheck(-1, poll(_pollfds.begin().base(), _pollfds.size(), -1), "Poll Failed");
-		
 		for (size_t i = 0 ; i < _pollfds.size() ; i++)
 		{
 			if (_pollfds[i].revents & POLLIN)
@@ -72,7 +79,6 @@ void	Server::newConnection()
 	socklen_t s_size = sizeof(s_address);
 
 	fd = errCheck(-1, accept(_socketFd, (sockaddr *) &s_address, &s_size), "Error: accept failed!\n");
-
 	_pollfds.push_back((pollfd){fd, POLLIN, 0});
 
 	char hostname[1024];
@@ -83,9 +89,7 @@ void	Server::newConnection()
 	_clients.insert(std::make_pair(fd, client));
 	_usrCount += 1;
 
-	char message[1000];
-	sprintf(message, "User%d: %d has connected.", _usrCount, client->getPort());
-	serverInfo(message);
+	serverInfo("User has connected");
 }
 
 void Server::readMessage(int fd) {
@@ -104,10 +108,10 @@ void Server::readMessage(int fd) {
 
 	while (std::getline(newMessage, temp))
 	{
-		temp = temp.substr(0, temp.length() - (temp[temp.length() - 1] == '\r')); // Komut sonu değilse olduğu gibi al
-		std::string commandName = temp.substr(0, temp.find(' ')); // ana komut ismini alıyorum (boşluktan önce)
+		temp = temp.substr(0, temp.length() - (temp[temp.length() - 1] == '\r'));
+		std::string commandName = temp.substr(0, temp.find(' '));
 
-		std::vector<std::string> arguments; // Komutların argümanlarını tutuyorum
+		std::vector<std::string> arguments;
 
 		std::string buf;
 		std::stringstream args(temp.substr(commandName.length(), temp.length()));
@@ -127,12 +131,15 @@ void Server::readMessage(int fd) {
 		if (buf2.size() > 0)
 			arguments.push_back(buf2);
 		
-		arguments.insert(arguments.begin(), commandName); // Argümanları aldığım komutların senin fonksiyon map'ine uyarlamak için argümanların başına yukarıdan aldığım commandName'i ekledim
+		arguments.insert(arguments.begin(), commandName);
 		
+		// for (size_t i = 0 ; i < arguments.size() ; i++)
+		// 	std::cout << "*" << arguments[i] << "*\n";
+
 		if (arguments[0] == "USER" && _clients[fd]->getStatus() != 1)
 		{
 			std::vector<std::string> msg;
-			std::string errMsg = "ERROR :Passwords didn't match";
+			std::string errMsg = "ERROR :Error either password was not given or the nick was in use";
 			ft_write(fd, errMsg);
 			msg.push_back("Passwords didn't match");
 			quit(fd, msg);
@@ -140,17 +147,14 @@ void Server::readMessage(int fd) {
 		}
 
 		if (_commands.find(arguments[0]) != _commands.end())
-			(this->*_commands[toUpper(arguments[0])])(fd, arguments); // İstenen adda bir fonksiyonumuz varsa fonksiyona gidiyorum yoksa command not found.
+			(this->*_commands[toUpper(arguments[0])])(fd, arguments);
 		else
-			std::cout << "Error: command not found!\n";
+			ft_write(fd, ERR_UNKNOWNCOMMAND(_clients[fd]->getNickName(), commandName));
 	}
 }
 
-void    Server::serverInfo(std::string message) {
-    time_t now = time(0);
-	tm *ltm = localtime(&now);
-
-	std::cout << ltm->tm_mday << "." << ltm->tm_mon+1 << "." << ltm->tm_year+1900;
-  	std::cout << " " << ltm->tm_hour << ":" << ltm->tm_min << ":" << ltm->tm_sec << std::endl;
-	std::cout << "[" << message << "]" << std::endl;
+void	Server::casting(int _fd, std::vector<Client *> _clients, const std::string &message)
+{
+    for (std::vector<Client *>::iterator it = _clients.begin(); it != _clients.end(); it++)
+        ft_write(_fd, message);
 }

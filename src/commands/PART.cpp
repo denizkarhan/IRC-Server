@@ -40,5 +40,10 @@ void	Server::part(int fd, std::vector<std::string> token) {
 	msg = ":" + _clients[fd]->getPrefixName() + " PART " + name;
 	ft_write(fd, msg);
 	_clients[fd]->_channels[i]->leftTheChannel(_clients[fd]);
-
+    _clients[fd]->_channels.erase(_clients[fd]->_channels.begin() + i);
+    if (_clients[fd]->_channels[i]->getClientCount() == 0)
+	{
+		std::cout << _clients[fd]->_channels[i]->getName() << " Channel delete...\n";
+		_channels.erase(_clients[fd]->_channels[i]->getName());
+	}
 }

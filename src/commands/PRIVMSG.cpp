@@ -1,10 +1,5 @@
 #include "../../headers/Server.hpp"
-/**
- * @brief 
- * 
- * @param name name of the user
- * @return int returns the fd value of the said user or returns -1 if none found
- */
+
 int Server::findUserByName(std::string name)
 {
     for (std::map<int, Client *>::iterator it = _clients.begin() ; it != _clients.end() ; it++)
@@ -44,7 +39,7 @@ void    Server::privmsg(int fd, std::vector<std::string> token)
 		if (channel->getClientAuthority())
 		{
 			size_t	i = 0;
-			for (i = 0 ; i < _channels[token[1]]->_channelClients.size() ; i++) // Kanala mesaj yollamak için şimdiki kullanıcının kanalda olması gereklidir.
+			for (i = 0 ; i < _channels[token[1]]->_channelClients.size() ; i++)
 				if (_channels[token[1]]->_channelClients[i]->getNickName() == _clients[fd]->getNickName())
 					break;
 			if (i == _channels[token[1]]->_channelClients.size())

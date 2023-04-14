@@ -12,15 +12,15 @@ void	Server::quit(int fd, std::vector<std::string> token)
 			_pollfds.erase(_pollfds.begin() + i);
 		}
 	}
-	for (size_t i = 0 ; i < _clients[fd]->_channels.size() ; i++) // client serverdan ayrılırken bulunduğu tüm kanallardan ayrılmalı.
+	for (size_t i = 0 ; i < _clients[fd]->_channels.size() ; i++)
 	{
 		_clients[fd]->_channels[i]->leftTheChannel(_clients[fd]);
 		if (_clients[fd]->_channels[i]->getClientCount() == 0)
 		{
-			std::cout << "Channel delete...\n";
+			std::cout << "Channel deleted\n";
 			_channels.erase(_channels.find(_clients[fd]->_channels[i]->getName()));
 		}
 	}
-	_clients.erase(fd); // server'dan kullanıcıyı sildim.
+	_clients.erase(fd);
 	_usrCount--;
 }

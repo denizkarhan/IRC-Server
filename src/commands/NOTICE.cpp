@@ -23,6 +23,18 @@ void	Server::notice(int fd, std::vector<std::string> token)
         return ;
     }
     else if (_channels.find(token[1]) != _channels.end()) { // FOUND CHANNEL
+        if (_channels[token[1]]->getClientAuthority())
+		{
+			size_t	i = 0;
+			for (i = 0 ; i < _channels[token[1]]->_channelClients.size() ; i++)
+				if (_channels[token[1]]->_channelClients[i]->getNickName() == _clients[fd]->getNickName())
+					break;
+			if (i == _channels[token[1]]->_channelClients.size())
+			{
+				_clients[fd]->clientMsgSender(fd, ERR_CANNOTSENDTOCHAN(_clients[fd]->getNickName(), token[1]));
+				return;
+			}
+		}
         broadcastNotice(_channels.find(token[1])->second->_channelClients, token[2], fd, token[1]);
         return ;
     }

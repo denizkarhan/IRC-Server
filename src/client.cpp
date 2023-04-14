@@ -24,3 +24,24 @@ void Client::leave()
     	serverInfo(message);
     }
 }
+
+std::string	Client::getPrefixName()
+{
+    std::string prefixName = _nickname;
+    if (!(_username.empty()))
+        prefixName += '!' + _username;
+    if (!(_hostname.empty()))
+        prefixName += '@' + _hostname;
+    return (prefixName);
+}
+
+void	Client::clientMsgSender(int _fd, std::string const &msg)
+{
+    ft_write(_fd, ":" + getPrefixName() + " " + msg);
+}
+
+void	Client::casting(int _fd, std::vector<Client *> _clients, const std::string &message)
+{
+    for (std::vector<Client *>::iterator it = _clients.begin(); it != _clients.end(); it++)
+        ft_write(_fd, message);
+}

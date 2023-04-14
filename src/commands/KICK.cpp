@@ -1,4 +1,3 @@
-// Deniz burayı yapacak
 #include "../../headers/Server.hpp"
 
 void	Server::kick(int fd, std::vector<std::string> token)
@@ -6,25 +5,18 @@ void	Server::kick(int fd, std::vector<std::string> token)
 	token.erase(token.begin());
 	std::string	msg;
 
-	for (size_t i = 0 ; i < token.size() ; i++)
-		std::cout << "*" << token[i] << "*\n";
-
 	if (token.size() < 3) {
 		_clients[fd]->clientMsgSender(fd, ERR_NEEDMOREPARAMS(_clients[fd]->getNickName(), "KICK"));
 		return;
 	}
 
+	for (size_t i = 0 ; i < token.size() ; i++)
+		std::cout << "*" << token[i] << "*\n";
+
 	std::string channelName = token[1].substr(token[1][0] == ':', token[1].size());
-	std::string target = token[2].substr(token[2][0] == ':', token[2].size());
+	std::string target = token[2].substr(token[2][0] == ':', token[2].find(' '));
 	if (target[target.size() - 1] == ' ')
 		target = target.substr(0, target.size() - 1);
-	std::string reason = "";
-
-	if (token.size() > 3 && (token[3][0] != ':' || token[3].size() > 1)) {
-		reason = "";
-		for (size_t it = 3 ; it < token.size() ; it++)
-			reason.append(token[it] + " ");
-	}
 
 	size_t	channelFinder = 0;
 	for (channelFinder = 0 ; channelFinder < _clients[fd]->_channels.size() ; channelFinder++)
@@ -61,21 +53,21 @@ void	Server::kick(int fd, std::vector<std::string> token)
 		return;
 	}
 
-	std::cout << std::endl << "Kanalın eski admini:	" << _channels[channelName]->getAdmin()->getNickName() << std::endl;
+	std::cout << std::endl << "Before channel's admin:	" << _channels[channelName]->getAdmin()->getNickName() << std::endl;
 	for (size_t i = 0 ; i < _channels[channelName]->_channelClients.size() ; i++)
 		std::cout << i + 1 << "->	"<< _channels[channelName]->_channelClients[i]->getNickName() << std::endl;
 	
-	broadcast(_channels[channelName]->_channelClients, RPL_KICK(_clients[fd]->getNickName(), channelName, target, reason), targetClientFd);
+	broadcast(_channels[channelName]->_channelClients, RPL_KICK(_clients[fd]->getNickName(), channelName, target, token[2]), targetClientFd);
 	_channels[channelName]->leftTheChannel(_clients[targetClientFd]);
 	if (_channels[channelName]->getClientCount() == 0)
 	{
-		std::cout << channelName << " Kanalı Siliniyor...\n";
+		std::cout << channelName << " Channel delete...\n";
 		_channels.erase(channelName);
 	}
 
 	if (_channels.find(channelName) != _channels.end() && _channels[channelName]->getClientCount() > 0)
 	{
-		std::cout << std::endl << "Kanalın yeni admini:	" << _channels[channelName]->getAdmin()->getNickName() << std::endl;
+		std::cout << std::endl << "After channel's admin:	" << _channels[channelName]->getAdmin()->getNickName() << std::endl;
 		for (size_t i = 0 ; i < _channels[channelName]->_channelClients.size() ; i++)
 			std::cout << i + 1 << "->	" << _channels[channelName]->_channelClients[i]->getNickName() << std::endl;
 	}

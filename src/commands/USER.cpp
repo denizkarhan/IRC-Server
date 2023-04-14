@@ -1,7 +1,6 @@
 #include "../../headers/Server.hpp"
 
 void	Server::user(int fd, std::vector<std::string> token) {
-	// /USER <username> <hostname> <servername> <realname>
 
 	std::string msg;
 
