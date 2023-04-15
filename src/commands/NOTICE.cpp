@@ -1,7 +1,6 @@
 #include "../../headers/Server.hpp"
 
-void    Server::broadcastNotice(const std::vector<Client *> &clientList, std::string msg, int excludeFd, std::string channelName)
-{
+void    Server::broadcastNotice(const std::vector<Client *> &clientList, std::string msg, int excludeFd, std::string channelName) {
     for (size_t i = 0; i < clientList.size(); i++)
     {
         if (clientList[i]->getFd() == excludeFd)
@@ -10,8 +9,7 @@ void    Server::broadcastNotice(const std::vector<Client *> &clientList, std::st
     }
 }
 
-void	Server::notice(int fd, std::vector<std::string> token)
-{
+void	Server::notice(int fd, std::vector<std::string> token) {
     if (token[token.size() - 1][0] != ':' || token.size() != 3) {
         ft_write(fd, ":" + _clients[fd]->getPrefixName() + " 461 " + _clients[fd]->getNickName() + " NOTICE :Not enough parameters\r\n");
         return ;
@@ -38,5 +36,5 @@ void	Server::notice(int fd, std::vector<std::string> token)
         broadcastNotice(_channels.find(token[1])->second->_channelClients, token[2], fd, token[1]);
         return ;
     }
-    ft_write(fd, ":" + _clients[fd]->getPrefixName() + " 401 " + token[1] + ": No such Nick/Channel\r\n"); //NO USER OR CHANNEL MATCHES
+    ft_write(fd, ":" + _clients[fd]->getPrefixName() + " 401 " + token[1] + ":No such Nick/Channel\r\n"); //NO USER OR CHANNEL MATCHES
 }

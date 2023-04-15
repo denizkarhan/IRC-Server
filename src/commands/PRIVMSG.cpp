@@ -1,15 +1,13 @@
 #include "../../headers/Server.hpp"
 
-int Server::findUserByName(std::string name)
-{
+int Server::findUserByName(std::string name) {
     for (std::map<int, Client *>::iterator it = _clients.begin() ; it != _clients.end() ; it++)
         if (it->second->getNickName() == name)
             return it->first;
     return -1;
 }
 
-void    Server::broadcast(const std::vector<Client *> &clientList, std::string msg, int excludeFd)
-{
+void    Server::broadcast(const std::vector<Client *> &clientList, std::string msg, int excludeFd) {
     for (size_t i = 0; i < clientList.size(); i++)
     {
         if (clientList[i]->getFd() == excludeFd)
@@ -18,8 +16,7 @@ void    Server::broadcast(const std::vector<Client *> &clientList, std::string m
     }
 }
 
-void    Server::privmsg(int fd, std::vector<std::string> token)
-{
+void    Server::privmsg(int fd, std::vector<std::string> token) {
 	if (token.size() < 3) {
 		_clients[fd]->clientMsgSender(fd, ERR_NEEDMOREPARAMS(_clients[fd]->getNickName(), "PRIVMSG"));
 		return;

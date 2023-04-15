@@ -44,6 +44,7 @@ int Server::createSocket() {
 
 	_socketFd = errCheck(-1, socket(AF_INET, SOCK_STREAM, 0), "Error: failed to create socket.");
 	errCheck(-1, setsockopt(_socketFd, SOL_SOCKET, SO_REUSEADDR, &t, sizeof(t)), "Error: failed to setsockopt.");
+	errCheck(-1, fcntl(_socketFd, F_SETFL, O_NONBLOCK), "Error: failed non-blocking.");
 	errCheck(-1, bind(_socketFd, (struct sockaddr *) &_addr, (socklen_t)sizeof(_addr)), "Error: failed to bind.");
 	errCheck(-1, listen(_socketFd, 1024), "Error: failed to listen.");
 
@@ -59,6 +60,13 @@ void	Server::loop() {
 		errCheck(-1, poll(_pollfds.begin().base(), _pollfds.size(), -1), "Poll Failed");
 		for (size_t i = 0 ; i < _pollfds.size() ; i++)
 		{
+			if (_pollfds[i].revents & POLLHUP)
+			{
+				std::vector<std::string> msg;
+				msg.push_back("Disconnected ()");
+				quit(_pollfds[i].fd, msg);
+				break;
+			}
 			if (_pollfds[i].revents & POLLIN)
 			{
 				if (_pollfds[i].fd == _socketFd)
@@ -72,8 +80,7 @@ void	Server::loop() {
 	}
 }
 
-void	Server::newConnection()
-{
+void	Server::newConnection() {
 	int fd;
 	sockaddr_in s_address = {};
 	socklen_t s_size = sizeof(s_address);
@@ -108,34 +115,25 @@ void Server::readMessage(int fd) {
 
 	while (std::getline(newMessage, temp))
 	{
-		temp = temp.substr(0, temp.length() - (temp[temp.length() - 1] == '\r'));
-		std::string commandName = temp.substr(0, temp.find(' '));
-
-		std::vector<std::string> arguments;
-
-		std::string buf;
-		std::stringstream args(temp.substr(commandName.length(), temp.length()));
-		std::string	buf2;
 		int flag = 0;
+		temp = temp.substr(0, temp.length() - (temp[temp.length() - 1] == '\r'));
+		std::vector<std::string> arguments;
+		std::string buf, buf2, commandName = temp.substr(0, temp.find(' '));
+		std::stringstream args(temp.substr(commandName.length(), temp.length()));
 
 		while (args >> buf)
 		{
-			if (buf[0] == ':' || flag)
-			{
-				buf2 += buf + " ";
-				flag = 1;
+			if (buf[0] == ':' || flag) {
+				buf2 += buf + " "; flag = 1;
 			}
-			else
+			else if (buf.size() > 0)
 				arguments.push_back(buf);
 		}
-		if (buf2.size() > 0)
+		if (buf2.size() > 0) {
 			arguments.push_back(buf2);
-		
-		arguments.insert(arguments.begin(), commandName);
-		
-		// for (size_t i = 0 ; i < arguments.size() ; i++)
-		// 	std::cout << "*" << arguments[i] << "*\n";
+		}
 
+		arguments.insert(arguments.begin(), commandName);
 		if (arguments[0] == "USER" && _clients[fd]->getStatus() != 1)
 		{
 			std::vector<std::string> msg;
@@ -153,8 +151,7 @@ void Server::readMessage(int fd) {
 	}
 }
 
-void	Server::casting(int _fd, std::vector<Client *> _clients, const std::string &message)
-{
+void	Server::casting(int _fd, std::vector<Client *> _clients, const std::string &message) {
     for (std::vector<Client *>::iterator it = _clients.begin(); it != _clients.end(); it++)
         ft_write(_fd, message);
 }

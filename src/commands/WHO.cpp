@@ -1,7 +1,6 @@
 #include "../../headers/Server.hpp"
 
-void	Server::who(int fd, std::vector<std::string> token)
-{
+void	Server::who(int fd, std::vector<std::string> token) {
     if (token.empty() || token.size() < 2)
         return;
 

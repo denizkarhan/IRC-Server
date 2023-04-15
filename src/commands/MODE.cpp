@@ -1,15 +1,13 @@
 #include "../../headers/Server.hpp"
 
-void broadcasting(const std::string &message, std::vector<Client *> _clients)
-{
+void broadcasting(const std::string &message, std::vector<Client *> _clients) {
 	for (size_t i = 0 ; i < _clients.size() ; i++)
 		ft_write(_clients[i]->getFd(), message);
 }
 
-void	Server::mode(int fd, std::vector<std::string> token)
-{
+void	Server::mode(int fd, std::vector<std::string> token) {
     token.erase(token.begin());
-	if (token.size() < 2) {
+	if (token.size() < 2 || token[1].size() < 2) {
 		_clients[fd]->clientMsgSender(fd, ERR_NEEDMOREPARAMS(_clients[fd]->getNickName(), "MODE"));
 		return;
 	}
@@ -27,40 +25,19 @@ void	Server::mode(int fd, std::vector<std::string> token)
 		return;
 	}
 
-	int i = 0;
-	int p = 2;
-	char c;
+	bool	i = (token[1][0] == '+');
+	char	mod = token[1][1];
 
-	while ((c = token[1][i])) {
-
-		char prevC = (i > 0 ? token[1][i - 1] : '\0');
-		bool active = (prevC == '+');
-
-		switch (c) {
-
-			case 'n': {
-				channel->setClientAuthority(active);
-				broadcasting(RPL_MODE(_clients[fd]->getPrefixName(), channel->getName(), (active ? "+n" : "-n"), ""), _channels[target]->_channelClients);
-				break;
-			}
-
-			case 'l': {
-				channel->setMaxClientCount(active ? std::atoi(token[p].c_str()) : 1000000);
-				broadcasting(RPL_MODE(_clients[fd]->getPrefixName(), channel->getName(), (active ? "+l" : "-l"), (active ? token[p] : "")), _channels[target]->_channelClients);
-				p += active ? 1 : 0;
-				break;
-			}
-
-			case 'k': {
-				channel->setPassword(active ? token[p] : "");
-				broadcasting(RPL_MODE(_clients[fd]->getPrefixName(), channel->getName(), (active ? "+k" : "-k"), (active ? token[p] : "")), _channels[target]->_channelClients);
-				p += active ? 1 : 0;
-				break;
-			}
-
-			default:
-				break;
-		}
-		i++;
-    }
+	if (mod == 'k') {
+			channel->setPassword((i && token.size() > 2) ? token[2] : "");
+			broadcasting(RPL_MODE(_clients[fd]->getPrefixName(), channel->getName(), (i ? "+k" : "-k"), (i ? token[2] : "")), _channels[target]->_channelClients);
+	}
+	else if (mod == 'l') {
+			channel->setMaxClientCount((i && token.size() > 2) ? std::atoi(token[2].c_str()) : 1000000);
+			broadcasting(RPL_MODE(_clients[fd]->getPrefixName(), channel->getName(), (i ? "+l" : "-l"), (i ? token[2] : "")), _channels[target]->_channelClients);
+	}
+	else if (mod == 'n') {
+			channel->setClientAuthority(i);
+			broadcasting(RPL_MODE(_clients[fd]->getPrefixName(), channel->getName(), (i ? "+n" : "-n"), ""), _channels[target]->_channelClients);
+	}
 }

@@ -1,7 +1,6 @@
 #include "../../headers/Server.hpp"
 
-void    Server::broadcastPart(const std::vector<Client *> &clientList, std::string msg, int excludeFd, std::string channelName)
-{
+void    Server::broadcastPart(const std::vector<Client *> &clientList, std::string msg, int excludeFd, std::string channelName) {
     for (size_t i = 0; i < clientList.size(); i++)
     {
         if (clientList[i]->getFd() == excludeFd)

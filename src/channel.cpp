@@ -1,7 +1,6 @@
 #include "../headers/Channel.hpp"
 
-Channel::Channel(Client *admin, std::string const &name, std::string const &password)
-{
+Channel::Channel(Client *admin, std::string const &name, std::string const &password) {
     _channelAdmin = admin;
     _channelClients.push_back(admin);
     _ClientCount = 1;
@@ -14,8 +13,7 @@ Channel::Channel(Client *admin, std::string const &name, std::string const &pass
 
 Channel::~Channel() {}
 
-void    Channel::leftTheChannel(Client *client)
-{
+void    Channel::leftTheChannel(Client *client) {
     for (size_t i = 0 ; i < _channelClients.size() ; i++)
     {
         if (_channelClients[i] == client)
@@ -43,8 +41,7 @@ void    Channel::leftTheChannel(Client *client)
     }
 }
 
-std::string     Channel::getUsers()
-{
+std::string     Channel::getUsers() {
     std::string users;
     for (size_t i = 0 ; i < _channelClients.size() ; i++)
 	{
